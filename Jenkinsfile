@@ -102,5 +102,13 @@ spec:
         always { archiveArtifacts artifacts: 'sbom.json', fingerprint: true }
       }
     }
+
+    stage('Vuln Scan - Trivy') {
+      steps {
+        container('trivy') {
+          sh "trivy image --severity CRITICAL,HIGH --exit-code 1 ${FULL_IMAGE}"
+        }
+      }
+    }
   }
 }
