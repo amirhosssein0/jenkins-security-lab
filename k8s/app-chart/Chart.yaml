@@ -1,0 +1,5 @@
+apiVersion: v2
+name: jenkins-security-lab-app
+description: Minimal chart for the lab 7 app
+version: 0.1.0
+appVersion: "1.0"
