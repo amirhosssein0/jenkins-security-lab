@@ -38,8 +38,10 @@ spec:
   }
 
   stages {
-    stage('placeholder') {
-      steps { echo 'agent works' }
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
     stage('Install SBOM/Sign tools') {
