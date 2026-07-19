@@ -86,7 +86,7 @@ spec:
               --context=`pwd`/app \
               --dockerfile=`pwd`/app/Dockerfile \
               --destination=${FULL_IMAGE} \
-              --cache=true
+              --ignore-path=/product_uuid
           """
         }
       }
