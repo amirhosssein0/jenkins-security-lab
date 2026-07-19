@@ -44,6 +44,14 @@ spec:
       }
     }
 
+    stage('IaC Scan - Checkov') {
+      steps {
+        container('checkov') {
+          sh 'checkov -d k8s/ --compact || true'
+        }
+      }
+    }
+
     stage('Install SBOM/Sign tools') {
       steps {
         container('tools') {
