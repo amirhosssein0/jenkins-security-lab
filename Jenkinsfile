@@ -57,9 +57,15 @@ spec:
         container('tools') {
           sh '''
             apk add --no-cache curl ca-certificates
-            curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-            curl -O -L https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
-            chmod +x cosign-linux-amd64 && mv cosign-linux-amd64 /usr/local/bin/cosign
+
+            SYFT_VERSION=1.48.0
+            curl -sSfL -o syft.tar.gz "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_amd64.tar.gz"
+            tar -xzf syft.tar.gz -C /usr/local/bin syft
+            rm syft.tar.gz
+            chmod +x /usr/local/bin/syft
+
+            curl -sSfL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+            chmod +x /usr/local/bin/cosign
           '''
         }
       }
