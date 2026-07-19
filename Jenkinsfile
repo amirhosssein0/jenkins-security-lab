@@ -91,5 +91,16 @@ spec:
         }
       }
     }
+
+    stage('SBOM - Syft') {
+      steps {
+        container('tools') {
+          sh "syft ${FULL_IMAGE} -o cyclonedx-json=sbom.json"
+        }
+      }
+      post {
+        always { archiveArtifacts artifacts: 'sbom.json', fingerprint: true }
+      }
+    }
   }
 }
