@@ -110,5 +110,31 @@ spec:
         }
       }
     }
+
+    stage('Sign - cosign') {
+      steps {
+        container('tools') {
+          withCredentials([
+            file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
+            string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
+          ]) {
+            sh "cosign sign --key \$COSIGN_KEY -y ${FULL_IMAGE}"
+          }
+        }
+      }
+    }
+
+    stage('Attest SBOM - cosign') {
+      steps {
+        container('tools') {
+          withCredentials([
+            file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
+            string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
+          ]) {
+            sh "cosign attest --key \$COSIGN_KEY --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}"
+          }
+        }
+      }
+    }
   }
 }
