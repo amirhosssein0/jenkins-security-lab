@@ -37,6 +37,13 @@ spec:
     }
   }
 
+  environment {
+  REGISTRY   = "docker.io/asdfghjkl0"
+  IMAGE_NAME = "jenkins-security-lab-app"
+  IMAGE_TAG  = "${env.BUILD_NUMBER}"
+  FULL_IMAGE = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -67,6 +74,20 @@ spec:
             curl -sSfL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
             chmod +x /usr/local/bin/cosign
           '''
+        }
+      }
+    }
+
+    stage('Build & Push - Kaniko') {
+      steps {
+        container('kaniko') {
+          sh """
+            /kaniko/executor \
+              --context=`pwd`/app \
+              --dockerfile=`pwd`/app/Dockerfile \
+              --destination=${FULL_IMAGE} \
+              --cache=true
+          """
         }
       }
     }
