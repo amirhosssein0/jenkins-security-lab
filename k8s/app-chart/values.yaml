@@ -1,5 +1,7 @@
 replicaCount: 1
 
+namespace: app
+
 image:
   repository: docker.io/asdfghjkl0/jenkins-security-lab-app
   tag: latest
