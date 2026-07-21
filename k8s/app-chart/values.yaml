@@ -4,7 +4,7 @@ namespace: app
 
 image:
   repository: docker.io/asdfghjkl0/jenkins-security-lab-app
-  tag: latest
+  digest: "sha256:52c73ec1ea6e822c9dd13fcf9c99db474b4fc7f8f9edf1dabd44fce303472d56"
 
 resources:
   requests:
