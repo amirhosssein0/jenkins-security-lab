@@ -18,6 +18,7 @@ spec:
       verifyImages:
         - imageReferences:
             - "docker.io/asdfghjkl0/*"
+          mutateDigest: false
           attestors:
             - count: 1
               entries:
