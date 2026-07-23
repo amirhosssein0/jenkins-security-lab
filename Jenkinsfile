@@ -118,7 +118,7 @@ spec:
             file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
             string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
           ]) {
-            sh "cosign sign --key \$COSIGN_KEY -y ${FULL_IMAGE}"
+            sh "cosign sign --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false -y ${FULL_IMAGE}"
           }
         }
       }
@@ -131,7 +131,7 @@ spec:
             file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
             string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
           ]) {
-            sh "cosign attest --key \$COSIGN_KEY --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}"
+            sh "cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}"
           }
         }
       }
