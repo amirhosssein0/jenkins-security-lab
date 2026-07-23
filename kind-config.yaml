@@ -4,4 +4,3 @@ name: jenkins-security-lab
 nodes:
   - role: control-plane
   - role: worker
-  - role: worker
