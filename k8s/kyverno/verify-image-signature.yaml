@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image-signatures
+spec:
+  validationFailureAction: Audit
+  background: false
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verify-signature
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - app
+      verifyImages:
+        - imageReferences:
+            - "docker.io/asdfghjkl0/*"
+          attestors:
+            - count: 1
+              entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmZ1M3JSE8+yblxA0YkjJqXIPI06R
+                      E6gAIvDsjpDmIR7xmUFeITCZij72RkEw8gaKZPvUrR6Q6L3Ea020bme2jw==
+                      -----END PUBLIC KEY-----
