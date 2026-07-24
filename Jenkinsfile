@@ -5,6 +5,7 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins-agent
   containers:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
@@ -76,6 +77,12 @@ spec:
 
             curl -sSfL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
             chmod +x /usr/local/bin/cosign
+
+            HELM_VERSION=3.21.3
+            curl -sSfL -o helm.tar.gz "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"
+            tar -xzf helm.tar.gz --strip-components=1 -C /usr/local/bin linux-amd64/helm
+            rm helm.tar.gz
+            chmod +x /usr/local/bin/helm
           '''
         }
       }
@@ -90,6 +97,7 @@ spec:
               --dockerfile=`pwd`/app/Dockerfile \
               --destination=${FULL_IMAGE} \
               --ignore-path=/product_uuid
+              --digest-file=digest.txt
           """
         }
       }
@@ -142,6 +150,20 @@ spec:
               cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}
             """
           }
+        }
+      }
+    }
+
+    stage('Deploy - Helm') {
+      steps {
+        container('tools') {
+          sh """
+            DIGEST=\$(cat digest.txt)
+            helm upgrade --install app ./k8s/app-chart \
+              --namespace app --create-namespace \
+              --set image.repository=${REGISTRY}/${IMAGE_NAME} \
+              --set image.digest=\${DIGEST}
+          """
         }
       }
     }
