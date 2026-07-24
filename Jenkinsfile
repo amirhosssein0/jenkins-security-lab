@@ -25,6 +25,9 @@ spec:
       image: alpine:3.22
       command: ["sleep"]
       args: ["99d"]
+      volumeMounts:
+      - name: docker-config
+        mountPath: /home/jenkins/.docker
 
   volumes:
     - name: docker-config
@@ -118,7 +121,10 @@ spec:
             file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
             string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
           ]) {
-            sh "cosign sign --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false -y ${FULL_IMAGE}"
+            sh """
+              export DOCKER_CONFIG=/home/jenkins/.docker
+              cosign sign --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false -y ${FULL_IMAGE}
+            """
           }
         }
       }
@@ -131,7 +137,10 @@ spec:
             file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY'),
             string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
           ]) {
-            sh "cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}"
+            sh """
+              export DOCKER_CONFIG=/home/jenkins/.docker
+              cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}
+            """
           }
         }
       }
