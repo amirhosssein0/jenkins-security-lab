@@ -96,7 +96,7 @@ spec:
               --context=`pwd`/app \
               --dockerfile=`pwd`/app/Dockerfile \
               --destination=${FULL_IMAGE} \
-              --ignore-path=/product_uuid
+              --ignore-path=/product_uuid \
               --digest-file=digest.txt
           """
         }
