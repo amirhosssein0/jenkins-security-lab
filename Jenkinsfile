@@ -162,7 +162,7 @@ spec:
           sh """
             DIGEST=\$(cat digest.txt)
             helm upgrade --install app ./k8s/app-chart \
-              --namespace app --create-namespace \
+              --namespace app \
               --set image.repository=${REGISTRY}/${IMAGE_NAME} \
               --set image.digest=\${DIGEST}
           """
