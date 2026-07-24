@@ -117,7 +117,9 @@ spec:
     stage('Vuln Scan - Trivy') {
       steps {
         container('trivy') {
-          sh "trivy image --severity CRITICAL,HIGH --exit-code 1 ${FULL_IMAGE}"
+          retry(3) {
+            sh "trivy image --severity CRITICAL,HIGH --exit-code 1 ${FULL_IMAGE}"
+          }
         }
       }
     }
