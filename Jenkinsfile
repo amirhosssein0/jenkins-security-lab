@@ -96,6 +96,7 @@ spec:
               --context=`pwd`/app \
               --dockerfile=`pwd`/app/Dockerfile \
               --destination=${FULL_IMAGE} \
+              --tar-path=`pwd`/image.tar \
               --ignore-path=/product_uuid \
               --digest-file=digest.txt
           """
@@ -106,7 +107,7 @@ spec:
     stage('SBOM - Syft') {
       steps {
         container('tools') {
-          sh "syft ${FULL_IMAGE} -o cyclonedx-json=sbom.json"
+          sh "syft docker-archive:image.tar -o cyclonedx-json=sbom.json"
         }
       }
       post {
@@ -117,9 +118,7 @@ spec:
     stage('Vuln Scan - Trivy') {
       steps {
         container('trivy') {
-          retry(3) {
-            sh "trivy image --severity CRITICAL,HIGH --exit-code 1 ${FULL_IMAGE}"
-          }
+          sh "trivy image --input image.tar --severity CRITICAL,HIGH --exit-code 1"
         }
       }
     }
