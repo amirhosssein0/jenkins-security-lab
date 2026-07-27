@@ -132,7 +132,14 @@ spec:
           ]) {
             sh """
               export DOCKER_CONFIG=/home/jenkins/.docker
-              cosign sign --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false -y ${FULL_IMAGE}
+              DIGEST=\$(cat digest.txt)
+              n=0
+              until cosign sign --key \$COSIGN_KEY --tlog-upload=false -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
+                n=\$((n+1))
+                [ \$n -ge 5 ] && { echo 'cosign sign failed after 5 attempts'; exit 1; }
+                echo "retry \$n/5 in 15s..."
+                sleep 15
+              done
             """
           }
         }
@@ -148,7 +155,14 @@ spec:
           ]) {
             sh """
               export DOCKER_CONFIG=/home/jenkins/.docker
-              cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${FULL_IMAGE}
+              DIGEST=\$(cat digest.txt)
+              n=0
+              until cosign attest --key \$COSIGN_KEY --tlog-upload=false --predicate sbom.json --type cyclonedx -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
+                n=\$((n+1))
+                [ \$n -ge 5 ] && { echo 'cosign attest failed after 5 attempts'; exit 1; }
+                echo "retry \$n/5 in 15s..."
+                sleep 15
+              done
             """
           }
         }
