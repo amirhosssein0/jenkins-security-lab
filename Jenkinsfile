@@ -118,7 +118,9 @@ spec:
     stage('Vuln Scan - Trivy') {
       steps {
         container('trivy') {
-          sh "trivy image --input image.tar --severity CRITICAL,HIGH --exit-code 1"
+          retry(3) {
+            sh "trivy image --timeout 15m --severity CRITICAL,HIGH --exit-code 1 ${FULL_IMAGE}"
+          }
         }
       }
     }
