@@ -75,7 +75,8 @@ spec:
             rm syft.tar.gz
             chmod +x /usr/local/bin/syft
 
-            curl -sSfL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+            COSIGN_VERSION=3.1.2
+            curl -sSfL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"
             chmod +x /usr/local/bin/cosign
 
             HELM_VERSION=3.21.3
@@ -136,7 +137,7 @@ spec:
               export DOCKER_CONFIG=/home/jenkins/.docker
               DIGEST=\$(cat digest.txt)
               n=0
-              until cosign sign --key \$COSIGN_KEY --tlog-upload=false -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
+              until cosign sign --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
                 n=\$((n+1))
                 [ \$n -ge 5 ] && { echo 'cosign sign failed after 5 attempts'; exit 1; }
                 echo "retry \$n/5 in 15s..."
@@ -159,7 +160,7 @@ spec:
               export DOCKER_CONFIG=/home/jenkins/.docker
               DIGEST=\$(cat digest.txt)
               n=0
-              until cosign attest --key \$COSIGN_KEY --tlog-upload=false --predicate sbom.json --type cyclonedx -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
+              until cosign attest --key \$COSIGN_KEY --tlog-upload=false --use-signing-config=false --new-bundle-format=false --predicate sbom.json --type cyclonedx -y ${REGISTRY}/${IMAGE_NAME}@\${DIGEST}; do
                 n=\$((n+1))
                 [ \$n -ge 5 ] && { echo 'cosign attest failed after 5 attempts'; exit 1; }
                 echo "retry \$n/5 in 15s..."
