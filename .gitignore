@@ -42,3 +42,4 @@ sbom.json
 
 # kubeconfig if you export one locally
 kubeconfig*
+velero-creds
