@@ -1,0 +1,12 @@
+# helm upgrade --install falco falcosecurity/falco -n falco --create-namespace -f k8s/falco-values.yaml
+#
+# --no-verify: skips Sigstore/TUF signature verification when pulling
+# the container plugin + rules artifacts. In a normal environment this
+# verification should stay on; it was disabled here because the local
+# network intermittently couldn't reach tuf-repo-cdn.sigstore.dev
+# (403s / timeouts), which blocked the daemonset from ever starting.
+falcoctl:
+  artifact:
+    install:
+      args:
+        - --no-verify
